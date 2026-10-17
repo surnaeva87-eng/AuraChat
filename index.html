@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AuraChat — Быстрый минималистичный мессенджер</title>
+    <meta name="description" content="Быстрый минималистичный мессенджер с личными и групповыми чатами, статусами онлайн, темами и синхронизацией данных через Firebase." />
+    <meta property="og:title" content="AuraChat — Быстрый минималистичный мессенджер" />
+    <meta property="og:description" content="Быстрый минималистичный мессенджер с личными и групповыми чатами, статусами онлайн, темами и синхронизацией данных через Firebase." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('aurachat_theme') || 'dark';
+          var doc = document.documentElement;
+          doc.classList.remove('dark', 'midnight', 'light');
+          if (t === 'light') {
+            doc.classList.add('light');
+            doc.setAttribute('data-theme', 'light');
+          } else if (t === 'midnight') {
+            doc.classList.add('dark', 'midnight');
+            doc.setAttribute('data-theme', 'midnight');
+          } else {
+            doc.classList.add('dark');
+            doc.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

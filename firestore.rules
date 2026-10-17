@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['username', 'avatar', 'status', 'createdAt']) &&
+        data.username is string && data.username.size() >= 2 && data.username.size() <= 32 &&
+        data.avatar is string && data.avatar.size() <= 256 &&
+        (data.status == 'online' || data.status == 'offline' || data.status == 'away') &&
+        data.createdAt is number;
+    }
+
+    function isValidMessage(data) {
+      return data.keys().hasAll(['chatId', 'senderId', 'senderName', 'text', 'timestamp']) &&
+        data.chatId is string && data.chatId.size() <= 128 &&
+        data.senderId is string && data.senderId.size() <= 128 &&
+        data.senderName is string && data.senderName.size() <= 50 &&
+        data.text is string && data.text.size() <= 2000 &&
+        data.timestamp is number;
+    }
+
+    function isValidGroup(data) {
+      return data.keys().hasAll(['name', 'createdBy', 'createdAt']) &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 60 &&
+        data.createdBy is string && data.createdBy.size() <= 128 &&
+        data.createdAt is number;
+    }
+
+    function isValidPresence(data) {
+      return data.keys().hasAll(['userId', 'username', 'type', 'timestamp']) &&
+        data.userId is string && data.userId.size() <= 128 &&
+        data.username is string && data.username.size() <= 50 &&
+        (data.type == 'join' || data.type == 'leave' || data.type == 'rank_promoted') &&
+        data.timestamp is number;
+    }
+
+    function isValidDevice(data) {
+      return data.keys().hasAll(['deviceId', 'accountCount', 'accounts']) &&
+        data.deviceId is string && data.deviceId.size() <= 128 &&
+        data.accountCount is number && data.accountCount <= 2 &&
+        data.accounts is list && data.accounts.size() <= 2;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isValidId(userId) && isValidUser(request.resource.data);
+      allow update: if isValidId(userId) && isValidUser(request.resource.data);
+      allow delete: if isValidId(userId);
+    }
+
+    match /messages/{messageId} {
+      allow read: if true;
+      allow create: if isValidId(messageId) && isValidMessage(request.resource.data);
+      allow update: if isValidId(messageId) && isValidMessage(request.resource.data);
+      allow delete: if isValidId(messageId);
+    }
+
+    match /groups/{groupId} {
+      allow read: if true;
+      allow create: if isValidId(groupId) && isValidGroup(request.resource.data);
+      allow update: if isValidId(groupId) && isValidGroup(request.resource.data);
+      allow delete: if isValidId(groupId);
+    }
+
+    match /presence_events/{eventId} {
+      allow read: if true;
+      allow create: if isValidId(eventId) && isValidPresence(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    match /devices/{deviceId} {
+      allow read: if true;
+      allow create, update: if isValidId(deviceId) && isValidDevice(request.resource.data);
+    }
+  }
+}

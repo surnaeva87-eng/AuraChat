@@ -1,0 +1,6 @@
+{
+  "name": "AuraChat",
+  "description": "Быстрый минималистичный мессенджер с личными и групповыми чатами, статусами онлайн, темами и синхронизацией данных через Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

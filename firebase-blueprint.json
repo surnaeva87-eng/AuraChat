@@ -1,0 +1,98 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered user profile with username, avatar, status and device tracking",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string", "maxLength": 32, "minLength": 2 },
+        "displayName": { "type": "string", "maxLength": 50 },
+        "avatar": { "type": "string", "maxLength": 256 },
+        "status": { "type": "string", "enum": ["online", "offline", "away"] },
+        "lastSeen": { "type": "number" },
+        "createdAt": { "type": "number" },
+        "deviceId": { "type": "string", "maxLength": 128 },
+        "passwordHash": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["username", "avatar", "status", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message for direct message or group channel",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string", "maxLength": 128 },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "senderName": { "type": "string", "maxLength": 50 },
+        "senderAvatar": { "type": "string", "maxLength": 256 },
+        "text": { "type": "string", "maxLength": 2000 },
+        "timestamp": { "type": "number" },
+        "type": { "type": "string", "enum": ["text", "system", "image"] }
+      },
+      "required": ["chatId", "senderId", "senderName", "text", "timestamp"]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "Group conversation channel",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 60, "minLength": 2 },
+        "description": { "type": "string", "maxLength": 200 },
+        "avatar": { "type": "string", "maxLength": 256 },
+        "createdBy": { "type": "string", "maxLength": 128 },
+        "members": { "type": "array" },
+        "createdAt": { "type": "number" },
+        "lastMessage": { "type": "string", "maxLength": 500 },
+        "lastMessageTime": { "type": "number" }
+      },
+      "required": ["name", "createdBy", "createdAt"]
+    },
+    "PresenceEvent": {
+      "title": "PresenceEvent",
+      "description": "Broadcast notifications when users connect or enter",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "username": { "type": "string", "maxLength": 50 },
+        "avatar": { "type": "string", "maxLength": 256 },
+        "type": { "type": "string", "enum": ["join", "leave"] },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["userId", "username", "type", "timestamp"]
+    },
+    "Device": {
+      "title": "Device",
+      "description": "Tracks account creation count per device identifier",
+      "type": "object",
+      "properties": {
+        "deviceId": { "type": "string", "maxLength": 128 },
+        "accountCount": { "type": "number" },
+        "accounts": { "type": "array" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["deviceId", "accountCount", "accounts"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Stores user profiles and online status"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Stores all messages for direct chats and groups"
+    },
+    "/groups/{groupId}": {
+      "schema": "Group",
+      "description": "Stores groups and chat channels"
+    },
+    "/presence_events/{eventId}": {
+      "schema": "PresenceEvent",
+      "description": "Broadcast event when someone enters the app"
+    },
+    "/devices/{deviceId}": {
+      "schema": "Device",
+      "description": "Tracks registered accounts per device to enforce 2-account maximum limit"
+    }
+  }
+}
